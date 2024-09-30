@@ -5,18 +5,22 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBars
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.grid.itemsIndexed
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ScrollableTabRow
 import androidx.compose.material3.Tab
@@ -29,6 +33,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -36,12 +41,14 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.map
 import me.kofesst.testtask.domain.NumberGenerator
+import java.math.BigInteger
 
 private const val PRELOAD_ITEMS_OFFSET = 20
 
 @Composable
 fun GeneratorsScreen(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    columnCount: Int = 2
 ) {
     val viewModel = hiltViewModel<GeneratorsViewModel>()
     val lazyState = rememberLazyGridState()
@@ -73,13 +80,18 @@ fun GeneratorsScreen(
         LazyVerticalGrid(
             modifier = Modifier.fillMaxSize(),
             state = lazyState,
-            columns = GridCells.Fixed(2),
-            contentPadding = WindowInsets.navigationBars.asPaddingValues()
+            columns = GridCells.Fixed(columnCount),
+            contentPadding = WindowInsets.navigationBars.asPaddingValues(),
+            horizontalArrangement = Arrangement.spacedBy(space = 4.dp),
+            verticalArrangement = Arrangement.spacedBy(space = 4.dp)
         ) {
-            items(numbers) { number ->
+            itemsIndexed(numbers) { index, number ->
+                val rowHighlightMode = (index / columnCount.toDouble()).toInt() % 2 == 0
+                val isHighlighted = if (rowHighlightMode) index % 2 == 0 else index % 2 != 0
                 NumberElement(
                     modifier = Modifier,
-                    number = number
+                    number = number,
+                    isHighlighted = isHighlighted
                 )
             }
         }
@@ -129,13 +141,21 @@ private fun GeneratorsTab(
 @Composable
 private fun NumberElement(
     modifier: Modifier = Modifier,
-    number: Long
+    number: BigInteger,
+    isHighlighted: Boolean
 ) {
     Box(
-        modifier = modifier.height(150.dp),
+        modifier = modifier
+            .defaultMinSize(minHeight = 150.dp)
+            .clip(RoundedCornerShape(size = 8.dp))
+            .background(
+                color = if (isHighlighted) MaterialTheme.colorScheme.primaryContainer
+                else MaterialTheme.colorScheme.surfaceVariant
+            ),
         contentAlignment = Alignment.Center
     ) {
         Text(
+            modifier = Modifier.padding(8.dp),
             text = number.toString(),
             style = MaterialTheme.typography.bodyLarge,
             fontWeight = FontWeight.SemiBold

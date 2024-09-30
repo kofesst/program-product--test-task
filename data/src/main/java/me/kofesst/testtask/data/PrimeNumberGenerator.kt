@@ -1,6 +1,7 @@
 package me.kofesst.testtask.data
 
 import me.kofesst.testtask.domain.NumberGenerator
+import java.math.BigInteger
 
 object PrimeNumberGenerator : NumberGenerator {
     override val name: String = "Простые числа"
@@ -12,13 +13,16 @@ object PrimeNumberGenerator : NumberGenerator {
     // 11 to [13, 17, ...]
     // 13 to [17, ...]
     // 17 to [...]
-    override val numbersSequence: Sequence<Long> =
-        generateSequence(2L to generateSequence(3L) { it + 2 }) {
+    override val numbersSequence: Sequence<BigInteger> =
+        generateSequence(
+            seed = 2L.toBigInteger() to
+                    generateSequence(3L.toBigInteger()) { it.plus(2.toBigInteger()) }
+        ) {
             val currentPrimesIterator = it.second.iterator()
             val nextPrime = currentPrimesIterator.next()
             // Фильтрация последовательности кандидатов - если они не кратны текущему простому числу
             nextPrime to currentPrimesIterator.asSequence().filter { primeCandidate ->
-                primeCandidate % nextPrime != 0L
+                primeCandidate % nextPrime != BigInteger.valueOf(0L)
             }
         }.map { it.first }
 }

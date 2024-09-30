@@ -12,6 +12,7 @@ import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.launch
 import me.kofesst.testtask.domain.GeneratorsRepository
 import me.kofesst.testtask.domain.NumberGenerator
+import java.math.BigInteger
 import javax.inject.Inject
 
 @HiltViewModel
@@ -25,7 +26,7 @@ class GeneratorsViewModel @Inject constructor(
     val selectedGenerator: StateFlow<NumberGenerator?> = _selectedGeneratorFlow.asStateFlow()
     val generators: StateFlow<List<NumberGenerator>> = _generatorsFlow.asStateFlow()
 
-    val numbersFlow: Flow<List<Long>> =
+    val numbersFlow: Flow<List<BigInteger>> =
         combine(
             flow = _selectedGeneratorFlow.filterNotNull(),
             flow2 = _numbersVisibleSizeFlow
@@ -53,7 +54,7 @@ class GeneratorsViewModel @Inject constructor(
     fun increaseNumbersVisibleSize() {
         viewModelScope.launch {
             _numbersVisibleSizeFlow.emit(
-                _numbersVisibleSizeFlow.value + 1
+                _numbersVisibleSizeFlow.value + 50
             )
         }
     }

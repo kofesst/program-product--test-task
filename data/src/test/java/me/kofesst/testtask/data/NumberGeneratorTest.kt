@@ -22,14 +22,9 @@ class NumberGeneratorTest {
         val fibonacciSequence = FibonacciNumberGenerator.numbersSequence
         fibonacciExpectedValues.forEach { (index, expected) ->
             val actual = fibonacciSequence.take(index + 1).last()
-            assert(expected == actual) {
+            assert(expected.toBigInteger() == actual) {
                 "Expected fibonacci number at index $index - $expected, but actual - $actual"
             }
-        }
-        val expectedLastItem = FibonacciNumberGenerator.MAX_FIBONACCI_FOR_LONG_TYPE
-        val actualLastItem = fibonacciSequence.last()
-        assert(expectedLastItem == actualLastItem) {
-            "Expected last fibonacci number - $expectedLastItem, but actual - $actualLastItem"
         }
     }
 
@@ -51,7 +46,7 @@ class NumberGeneratorTest {
         val primesSequence = PrimeNumberGenerator.numbersSequence
         primeExpectedValues.forEach { (index, expected) ->
             val actual = primesSequence.take(index + 1).last()
-            assert(expected == actual) {
+            assert(expected.toBigInteger() == actual) {
                 "Expected prime number at index $index - $expected, but actual - $actual"
             }
         }
